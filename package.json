@@ -10,8 +10,13 @@
     "@babel/polyfill": "^7.4.4",
     "@mdi/font": "^3.6.95",
     "core-js": "^3.4.3",
+    "d3": "^5.14.2",
+    "dayjs": "^1.8.17",
+    "leaflet": "^1.6.0",
+    "nouislider": "^14.1.1",
     "roboto-fontface": "*",
     "vue": "^2.6.10",
+    "vue2-leaflet": "^2.3.2",
     "vuetify": "^2.1.0",
     "vuex": "^3.1.2"
   },

@@ -1,60 +1,57 @@
 <template>
-  <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      <div class="d-flex align-center">
-        <v-img
-          alt="Vuetify Logo"
-          class="shrink mr-2"
-          contain
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-logo-dark.png"
-          transition="scale-transition"
-          width="40"
-        />
-
-        <v-img
-          alt="Vuetify Name"
-          class="shrink mt-1 hidden-sm-and-down"
-          contain
-          min-width="100"
-          src="https://cdn.vuetifyjs.com/images/logos/vuetify-name-dark.png"
-          width="100"
-        />
-      </div>
-
-      <v-spacer></v-spacer>
-
-      <v-btn
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-        text
-      >
-        <span class="mr-2">Latest Release</span>
-        <v-icon>mdi-open-in-new</v-icon>
-      </v-btn>
-    </v-app-bar>
-
-    <v-content>
-      <HelloWorld/>
-    </v-content>
-  </v-app>
+	<v-app v-if="dataLoaded">
+		<v-container fluid class="pa-0">
+			<v-row no-gutters>
+				<v-col>
+					<div id="timeslider-container">
+						<TimeSlider />
+					</div>
+					<Map />
+				</v-col>
+			</v-row>
+		</v-container>
+	</v-app>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld';
+import Map from './components/Map';
+import TimeSlider from './components/TimeSlider';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
-  name: 'App',
-
-  components: {
-    HelloWorld,
-  },
-
-  data: () => ({
-    //
-  }),
+	name: 'App',
+	components: {
+		Map,
+		TimeSlider,
+	},
+	data: () => ({
+	}),
+	computed: {
+		...mapState(['data','dataLoaded']),
+	},
+	beforeMount() {
+		this.$store.dispatch('loadData', {url:'./data/data.csv', id:'demo'})
+	},
 };
 </script>
+
+<style lang="scss">
+
+	html {
+		overflow: hidden !important;
+	}
+
+	#timeslider-container {
+		position: absolute;
+		bottom: 00px;
+		left: 0;
+		z-index: 20000;
+		width: 100%;
+		height: 125px;
+		padding: 0 50px;
+		background: rgba(255,255,255,0.6);
+		display:flex;
+		align-items: center
+	}
+
+</style>
