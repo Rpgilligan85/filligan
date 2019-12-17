@@ -14,9 +14,16 @@ export default {
 		noUiSlider
 	},
 	data: () => ({
-		dates:['1/1/2019','1/2/2019','1/3/2019','1/4/2019','1/5/2019','1/6/2019','1/7/2019', '1/8/2019', '1/1/2019','1/2/2019','1/3/2019','1/4/2019','1/5/2019','1/6/2019','1/7/2019', '1/8/2019'],
+		dates:null,
 		sliderValue: null
 	}),
+	computed: {
+		getDates() {
+			const data = this.$store.state.dataLoader.data.csv.demo;
+			const dates = [...new Set(data.map(item => item.Date))]
+			return dates.sort((a,b) => new Date(a) - new Date(b))
+		}
+	},
 	methods: {
 		initSlider() {
 			noUiSlider.create(this.$el, {
@@ -32,7 +39,7 @@ export default {
 				pips: {
 					mode: 'count',
 					density: this.dates.length / 2 ,
-					values:6,
+					values:10,
 					// filter: this.filterPips,
 					stepped: true,
 					format: { 
@@ -45,7 +52,7 @@ export default {
 					from: (value) => Math.floor(value)
 				}
 			});
-			this.$el.noUiSlider.on('update',(values, handle) => {
+			this.$el.noUiSlider.on('end',(values, handle) => {
 				this.updateValues(values, handle)
 			});
 		},
@@ -68,10 +75,12 @@ export default {
 				end = this.dates[values[1]]
 				this.sliderValue = [start,end]
 			}
+			this.$store.commit('SET_DATE_RANGE',[start,end])
 			console.log(this.sliderValue)
 		}
 	},
 	mounted() {
+		this.dates = this.getDates
 		this.initSlider()
 	},
 };

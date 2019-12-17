@@ -1,12 +1,12 @@
 <template>
-	<v-app v-if="dataLoaded">
+	<v-app>
 		<v-container fluid class="pa-0">
 			<v-row no-gutters>
 				<v-col>
 					<div id="timeslider-container">
 						<TimeSlider />
 					</div>
-					<Map />
+					<Map v-if="load" :data="data" :state="state" />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -25,13 +25,25 @@ export default {
 		TimeSlider,
 	},
 	data: () => ({
+		load: false,
+		data: null,
+		state: null
 	}),
 	computed: {
-		...mapState(['data','dataLoaded']),
+		...mapState({
+			test: 'dataLoader/test'
+		})
+	},
+	methods: {
 	},
 	beforeMount() {
 		this.$store.dispatch('loadData', {url:'./data/data.csv', id:'demo'})
 	},
+	mounted() {
+		this.data = this.$store.state.dataLoader.data
+		this.load = true
+		this.state = this.$store.state.dataLoader
+	}
 };
 </script>
 

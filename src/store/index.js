@@ -1,12 +1,11 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import dataLoader from './modules/dataLoader'
 Vue.use(Vuex)
 
-import dataLoader from './modules/dataLoader'
 
 export default new Vuex.Store({
   state: {
-    ready: false
   },
   mutations: {
   },

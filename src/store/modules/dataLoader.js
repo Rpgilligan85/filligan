@@ -6,11 +6,22 @@ const state = {
         csv: {},
         geojson: {}
     },
-    dataLoaded: false
+    dataLoaded: false,
+    dateRange:[]
 }
 
 const getters = {
-    dataLoaded: state => state.dataLoaded
+    dataLoaded: state => state.dataLoaded,
+    filteredData: state => state.data.geojson.demo.filter(item => {
+        let date = new Date(item.properties.Date).getTime()
+        let start = new Date(state.dateRange[0]).getTime()
+        let end = new Date(state.dateRange[1]).getTime()
+        if( date >= start && date <= end ) {
+            console.log('run')
+            return item
+        }
+    })
+
 }
 
 const mutations = {
@@ -22,6 +33,9 @@ const mutations = {
     },
     dataLoaded:(state, bool) => {
         state.dataLoaded = bool
+    },
+    SET_DATE_RANGE: (state,arr) => {
+        state.dateRange = arr
     }
 }
 
