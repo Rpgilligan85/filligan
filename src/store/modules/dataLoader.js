@@ -2,7 +2,7 @@ import Vue from 'vue'
 const d3 = require('d3')
 
 const state = {
-    data:{
+    appData:{
         csv: {},
         geojson: {}
     },
@@ -12,7 +12,7 @@ const state = {
 
 const getters = {
     dataLoaded: state => state.dataLoaded,
-    filteredData: state => state.data.geojson.demo.filter(item => {
+    filteredData: state => state.appData.geojson.demo.filter(item => {
         let date = new Date(item.properties.Date).getTime()
         let start = new Date(state.dateRange[0]).getTime()
         let end = new Date(state.dateRange[1]).getTime()
@@ -26,10 +26,10 @@ const getters = {
 
 const mutations = {
     loadCsvData: (state, obj) => {
-        Vue.set(state.data.csv, obj.id, obj.data)
+        Vue.set(state.appData.csv, obj.id, obj.data)
     },
     loadGeojsonData: (state, obj) => {
-        Vue.set(state.data.geojson, obj.id, obj.data)
+        Vue.set(state.appData.geojson, obj.id, obj.data)
     },
     dataLoaded:(state, bool) => {
         state.dataLoaded = bool
@@ -41,9 +41,9 @@ const mutations = {
 
 const actions = {
     loadData: ({commit, dispatch}, obj) => {
-        d3.csv(obj.url).then((data) => {
+        d3.csv(obj.options.url).then((data) => {
             commit('loadCsvData',{id:obj.id,data:data})
-            dispatch('createGeojson', {id:obj.id,data:data,lat:'lat',lng:'lng'})
+            dispatch('createGeojson', {id:obj.id,data:data,lat:obj.options.lat,lng:obj.options.lng})
             commit('dataLoaded', true)
         })
     },
@@ -68,8 +68,9 @@ const actions = {
 }
 
 export default {
+    namespaced: true,
     state,
     getters,
-    mutations,
-    actions
-}
+    actions,
+    mutations
+  }

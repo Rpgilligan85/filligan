@@ -1,12 +1,17 @@
 <template>
-	<v-app>
+	<v-app v-if="dataLoaded">
 		<v-container fluid class="pa-0">
+			<v-toolbar color="#222" dark>
+				<v-toolbar-title>
+					{{config.details.headerTitle}}
+				</v-toolbar-title>
+			</v-toolbar>
 			<v-row no-gutters>
 				<v-col>
 					<div id="timeslider-container">
-						<TimeSlider />
+						<TimeSlider v-if="dataLoaded" />
 					</div>
-					<Map v-if="load" :data="data" :state="state" />
+					<Map :data="mapData" />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -16,7 +21,7 @@
 <script>
 import Map from './components/Map';
 import TimeSlider from './components/TimeSlider';
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
 	name: 'App',
@@ -25,24 +30,26 @@ export default {
 		TimeSlider,
 	},
 	data: () => ({
-		load: false,
-		data: null,
-		state: null
 	}),
 	computed: {
 		...mapState({
-			test: 'dataLoader/test'
+			config: state => state.config,
+			mapData: state => state.dataLoader.appData,
+			dataLoaded: state => state.dataLoader.dataLoaded,
 		})
 	},
 	methods: {
+		...mapActions({
+			loadData: 'dataLoader/loadData'
+		})
 	},
 	beforeMount() {
-		this.$store.dispatch('loadData', {url:'./data/data.csv', id:'demo'})
+		for (let f in this.config.data) {
+			this.loadData(this.config.data[f])
+		}
 	},
 	mounted() {
-		this.data = this.$store.state.dataLoader.data
-		this.load = true
-		this.state = this.$store.state.dataLoader
+		console.log(this.mapData)
 	}
 };
 </script>

@@ -5,13 +5,10 @@ Vue.use(Vuex)
 
 
 export default new Vuex.Store({
-  state: {
-  },
-  mutations: {
-  },
-  actions: {
-  },
-  modules: {
-    dataLoader
-  }
+	modules: {
+	  dataLoader
+	},
+ 	state: {
+	  config: config
+  	},
 })

@@ -7,6 +7,7 @@
 import noUiSlider from 'nouislider'
 import 'nouislider/distribute/nouislider.css'
 import dayjs from 'dayjs'
+import { mapState, mapMutations } from 'vuex';
 
 export default {
 	name: 'TimeSlider',
@@ -18,13 +19,18 @@ export default {
 		sliderValue: null
 	}),
 	computed: {
+		...mapState({
+			mapData: state => state.dataLoader.appData.csv.demo
+		}),
 		getDates() {
-			const data = this.$store.state.dataLoader.data.csv.demo;
-			const dates = [...new Set(data.map(item => item.Date))]
+			const dates = [...new Set(this.mapData.map(item => item.Date))]
 			return dates.sort((a,b) => new Date(a) - new Date(b))
 		}
 	},
 	methods: {
+		...mapMutations({
+			SET_DATE_RANGE: 'dataLoader/SET_DATE_RANGE'
+		}),
 		initSlider() {
 			noUiSlider.create(this.$el, {
 				start: [1, 7],
@@ -75,7 +81,7 @@ export default {
 				end = this.dates[values[1]]
 				this.sliderValue = [start,end]
 			}
-			this.$store.commit('SET_DATE_RANGE',[start,end])
+			this.SET_DATE_RANGE([start,end])
 			console.log(this.sliderValue)
 		}
 	},

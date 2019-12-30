@@ -6,7 +6,7 @@
 			:center="center"
 		>
 		<l-tile-layer :url="url"></l-tile-layer>
-		<Vue2LeafletMarkerCluster v-if="data.geojson.demo" ref="clusterRef">
+		<Vue2LeafletMarkerCluster ref="clusterRef">
 			<LGeoJson
 				:geojson="filteredData"
 				:options="options"
@@ -36,7 +36,9 @@ export default {
 		mapLoaded : false
 	}),
 	computed: {
-		...mapGetters(['filteredData']),
+		...mapGetters({
+			filteredData: 'dataLoader/filteredData'
+		}),
 		options() {
 			return {
 				onEachFeature: this.onEachMarker()
@@ -71,7 +73,7 @@ export default {
 
 	#map {
 		width: 100vw;
-		height: 100vh;
+		height: calc(100vh - 65px);
 	}
 
 	.circle {
