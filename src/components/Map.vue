@@ -6,7 +6,7 @@
 			:center="center"
 		>
 		<l-tile-layer :url="url"></l-tile-layer>
-		<template v-for="item in mapData">
+		<template v-for="(item, id) in mapData">
 			<Vue2LeafletMarkerCluster 
 				v-for="(geo, key) in item" :key="key"
 				:ref="key"
@@ -14,7 +14,7 @@
 			>
 				<LGeoJson
 					:geojson="geo"
-					:options="options"
+					:options="options(id)"
 					:ref="`geojson_${key}`"
 				/>
 			</Vue2LeafletMarkerCluster>
@@ -28,7 +28,7 @@ import {LMap, LTileLayer, LMarker, LGeoJson} from 'vue2-leaflet'
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import L from 'leaflet'
-import { mapGetters, mapState, mapActions } from 'vuex'
+import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
 
 export default {
 	name: 'Map',
@@ -41,40 +41,53 @@ export default {
 		mapLoaded : false,
 		clusterOptions: {
 			maxClusterRadius:30
-		}
+		},
+		iconObj: null
 	}),
 	computed: {
 		...mapGetters({
 			selectedItems: 'legend/selected',
+			// dataUpdated: 'timeslider/dataUpdated'
 		}),
 		...mapState({
 			config: state => state.config,
-			mapData: state => state.dataLoader.appData.filtered
+			mapData: state => state.dataLoader.appData.filtered,
+			dataUpdated: state => state.timeslider.dataUpdated
 		}),
-		options() {
-			return {
-				onEachFeature: this.onEachMarker()
-			}
-		}
+		
 	},
 	methods: {
 		...mapActions({
 			filterData: 'timeslider/filterData'
 		}),
-		onEachMarker() {
+		
+		options(id) {
+			return {
+				onEachFeature: this.onEachMarker(id)
+			}
+		},
+		onEachMarker(id) {
+			const prop = this.config.data[id].style.prop;
 			return (feature,layer) => {
 				let myIcon = L.divIcon({
-					className:`marker mdi mdi-${feature.properties.POI.toLowerCase()}`
+					html:`<div class="mdi mdi-${this.getIcon(feature,prop,id)}" style="${this.getStyles(feature,prop,id)}"</div>`
 				})
 				layer.setIcon(myIcon)
-				layer.bindPopup(feature.properties.POI)
+				layer.bindPopup(feature.properties[prop])
 			}
+		},
+		getIcon(feature, prop, id) {
+			return this.iconObj[`${id}_${feature.properties[prop]}`].icon
+		},
+		getStyles(feature, prop, id) {
+			return `color: ${this.iconObj[`${id}_${feature.properties[prop]}`].color}; font-size: ${this.iconObj[`${id}_${feature.properties[prop]}`].size}`
 		},
 		toggleData(key) {
 			let items = this.selectedItems.map(x => x.name)
 			return items.indexOf(key) != -1 ? true : false
 		},
 		updateData() {
+			console.log('run', this.$refs)
 			setTimeout(() => {
 				let items = this.selectedItems.map(x => x.name)
 				for(let f in this.$refs) {
@@ -84,21 +97,40 @@ export default {
 					}
 				}
 			}, 1);
+		},
+		createIconObj() {
+			let obj = {};
+			console.log(this.config.data)
+			for (let f in this.config.data) {
+				this.config.data[f].style.styleObj.forEach(item => {
+					obj[`${f}_${item.value}`] = item
+					obj[`${f}_${item.value}`].prop = this.config.data[f].style.prop
+				});
+			}
+			this.iconObj = obj
+			console.log('obj',obj)
 		}
 	},
 	watch: {
-		mapData: {
+		/* dataUpdated(val) {
+			console.log('val',val)
+			this.updateData()
+		}, */
+		dataUpdated: {
 			handler: function(val) {
-				this.updateData()
+				val ? this.updateData() : null
 			},
 			deep: true
 		},
 		selectedItems(val) {
-			this.filterData('demo')
+			console.log('val',val)
+			this.filterData()
+			this.updateData()
 		}
 	},
 	mounted() {
-		console.log('STATE', this.mapData)
+		this.createIconObj()
+		console.log(this.dataUpdated)
 	}
 };
 </script>
@@ -110,10 +142,9 @@ export default {
 		height: calc(100vh - 65px);
 	}
 
-	.marker {
-		font-size: 32px;
-		color: red;
-		background: red;
+	.leaflet-div-icon {
+		border: none !important;
+		background: none !important;
 	}
 
 

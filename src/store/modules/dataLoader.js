@@ -10,7 +10,6 @@ const state = {
 		filtered: {},
     },
     dataLoaded: false,
-    dateRange:[]
 }
 
 const getters = {
@@ -33,23 +32,19 @@ const mutations = {
     dataLoaded:(state, bool) => {
         state.dataLoaded = bool
     },
-    SET_DATE_RANGE: (state,arr) => {
-        state.dateRange = arr
-	},
 	SET_LEGEND_DATA:(rootState,arr) => {
 		state.appData.legend = arr
 	}
 }
 
 const actions = {
-    loadData: ({commit, dispatch}, obj) => {
-        d3.csv(obj.options.url).then((data) => {
+    loadData: async ({commit, dispatch}, obj) => {
+       await d3.csv(obj.options.url).then((data) => {
             commit('loadCsvData',{id:obj.id,data:data})
-            dispatch('createGeojson', {id:obj.id,data:data,lat:obj.options.lat,lng:obj.options.lng})
-            commit('dataLoaded', true)
         })
     },
-    createGeojson:({commit, rootState}, obj) => {
+    createGeojson: async ({commit, rootState}, obj) => {
+		console.log('OBJ',obj)
         let geo = [];
         for (let i = 0; i < obj.data.length; i++) {
             let _lat = Number(obj.data[i][obj.lat]);
@@ -63,12 +58,17 @@ const actions = {
                 properties: obj.data[i]
             }
         }
-        console.log('geo',geo)
         commit('loadGeojsonData',{id:obj.id,data:geo})
         commit('SET_GROUP_DATA',{id:obj.id,data:_.groupBy(geo, x => x.properties[rootState.config.data[obj.id].style.prop])})
 	},
-	createLegendData: ({commit, state, rootState}, obj) => {
-		commit('SET_LEGEND_DATA', _.groupBy(state.appData.geojson.demo, x => x.properties[rootState.config.data.demo.style.prop]))
+	createLegendData: ({commit, state}) => {
+		let combined = {};
+		for (let f in state.appData.grouped) {
+			_.assign(combined,{...state.appData.grouped[f]})
+			
+		}
+		console.log('combined',combined)
+		commit('SET_LEGEND_DATA', combined)
 	}
 }
 

@@ -25,7 +25,7 @@
 import Map from './components/Map';
 import TimeSlider from './components/TimeSlider';
 import Legend from './components/Legend';
-import { mapState, mapGetters, mapActions } from 'vuex';
+import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 
 export default {
 	name: 'App',
@@ -41,20 +41,31 @@ export default {
 			config: state => state.config,
 			mapData: state => state.dataLoader.appData,
 			dataLoaded: state => state.dataLoader.dataLoaded,
-		})
+		}),
+		
 	},
 	methods: {
 		...mapActions({
-			loadData: 'dataLoader/loadData'
+			loadData: 'dataLoader/loadData',
+			createGeojson: 'dataLoader/createGeojson'
+		}),
+		...mapMutations({
+			setLoadState: 'dataLoader/dataLoaded'
 		})
 	},
 	beforeMount() {
-		for (let f in this.config.data) {
-			this.loadData(this.config.data[f])
-		}
+		let Keys = Object.keys(this.config.data);
+		Keys.forEach((key,index) => {
+			this.loadData(this.config.data[key]).finally(() => {
+				console.log('CSV',this.mapData.csv[key])
+				this.createGeojson({id:key,data:this.mapData.csv[key],lat:this.config.data[key].options.lat,lng:this.config.data[key].options.lng}).finally(() => {
+					Keys.length === (index + 1) ? this.setLoadState(true) : this.setLoadState(false)
+				})
+            
+			})
+		})
 	},
 	mounted() {
-		console.log(this.mapData)
 	}
 };
 </script>

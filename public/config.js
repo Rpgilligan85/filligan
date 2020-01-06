@@ -22,28 +22,66 @@ const config = {
 					},
 					{
 						value:'Bar',
-						color:'red',
+						color:'blue',
 						icon: 'beer',
 						size: '32px'
 					},
 					{
 						value:'Grocery Store',
-						color:'red',
-						icon: 'storefront',
+						color:'green',
+						icon: 'office-building',
 						size: '32px'
 					},
 					{
 						value:'Gas Station',
-						color:'red',
+						color:'orange',
 						icon: 'gas-station',
 						size: '32px'
 					},
 				]
 			}
-		}
+		},
+		"test": {
+			id: "test",
+			type: 'csv',
+			options: {
+				url: './data/data2.csv',
+				lat: 'lat',
+				lng:'lng'
+			},
+			style: {
+				prop: 'POI',
+				styleObj: [
+					{
+						value:'Hospital',
+						color:'red',
+						icon: 'hospital',
+						size: '32px'
+					},
+					{
+						value:'School',
+						color:'blue',
+						icon: 'school',
+						size: '32px'
+					},
+					{
+						value:'Restaurant',
+						color:'green',
+						icon: 'food',
+						size: '32px'
+					},
+					{
+						value:'Hotel',
+						color:'orange',
+						icon: 'hotel',
+						size: '32px'
+					},
+				]
+			}
+		},
 	},
 	timeslider: {
-		data: ['demo'],
-		prop: ['Date']
+		data: ['demo','test'],
+		prop: ['Date','Date']
 	}
 }

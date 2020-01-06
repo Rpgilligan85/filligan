@@ -8,6 +8,7 @@ import noUiSlider from 'nouislider'
 import 'nouislider/distribute/nouislider.css'
 import dayjs from 'dayjs'
 import { mapState, mapMutations, mapActions } from 'vuex';
+import _ from 'lodash'
 
 export default {
 	name: 'TimeSlider',
@@ -20,16 +21,22 @@ export default {
 	}),
 	computed: {
 		...mapState({
-			mapData: state => state.dataLoader.appData.csv.demo
+			mapData: state => state.dataLoader.appData.csv
 		}),
-		getDates() {
-			const dates = [...new Set(this.mapData.map(item => item.Date))]
-			return dates.sort((a,b) => new Date(a) - new Date(b))
+		async getDates() {
+			let dates = [];
+			for(let f in this.mapData) {
+				dates.push([...new Set(this.mapData[f].map(item => item.Date))])
+				let uniq = _.uniq(dates).flat()
+				console.log(uniq)
+				this.dates = uniq.sort((a,b) => new Date(a) - new Date(b))
+			}
 		}
 	},
 	methods: {
 		...mapMutations({
-			SET_DATE_RANGE: 'timeslider/SET_DATE_RANGE'
+			SET_DATE_RANGE: 'timeslider/SET_DATE_RANGE',
+			UPDATE_DATA: 'timeslider/UPDATE_DATA'
 		}),
 		...mapActions({
 			filterData: 'timeslider/filterData'
@@ -85,14 +92,16 @@ export default {
 				this.sliderValue = [start,end]
 			}
 			this.SET_DATE_RANGE([start,end])
-			this.filterData('demo')
+			this.UPDATE_DATA(false)
+			this.filterData()
 			console.log('state', this.$store.state)
 			// console.log(this.sliderValue)
 		}
 	},
-	mounted() {
-		this.dates = this.getDates
-		this.initSlider()
+	beforeMount() {
+		this.getDates.finally(()=> {
+			this.initSlider()
+		})
 	},
 };
 
