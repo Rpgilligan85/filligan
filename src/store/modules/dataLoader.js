@@ -4,7 +4,10 @@ const d3 = require('d3')
 const state = {
     appData:{
         csv: {},
-        geojson: {}
+		geojson: {},
+		grouped: {},
+		legend: {},
+		filtered: {},
     },
     dataLoaded: false,
     dateRange:[]
@@ -12,16 +15,6 @@ const state = {
 
 const getters = {
     dataLoaded: state => state.dataLoaded,
-    filteredData: state => state.appData.geojson.demo.filter(item => {
-        let date = new Date(item.properties.Date).getTime()
-        let start = new Date(state.dateRange[0]).getTime()
-        let end = new Date(state.dateRange[1]).getTime()
-        if( date >= start && date <= end ) {
-            console.log('run')
-            return item
-        }
-    })
-
 }
 
 const mutations = {
@@ -31,12 +24,21 @@ const mutations = {
     loadGeojsonData: (state, obj) => {
         Vue.set(state.appData.geojson, obj.id, obj.data)
     },
+    SET_GROUP_DATA: (state, obj) => {
+        Vue.set(state.appData.grouped, obj.id, obj.data)
+    },
+    SET_FILTERED_DATA: (state, obj) => {
+        Vue.set(state.appData.filtered, obj.id, obj.data)
+    },
     dataLoaded:(state, bool) => {
         state.dataLoaded = bool
     },
     SET_DATE_RANGE: (state,arr) => {
         state.dateRange = arr
-    }
+	},
+	SET_LEGEND_DATA:(rootState,arr) => {
+		state.appData.legend = arr
+	}
 }
 
 const actions = {
@@ -47,7 +49,7 @@ const actions = {
             commit('dataLoaded', true)
         })
     },
-    createGeojson:({commit}, obj) => {
+    createGeojson:({commit, rootState}, obj) => {
         let geo = [];
         for (let i = 0; i < obj.data.length; i++) {
             let _lat = Number(obj.data[i][obj.lat]);
@@ -63,8 +65,11 @@ const actions = {
         }
         console.log('geo',geo)
         commit('loadGeojsonData',{id:obj.id,data:geo})
-        
-    }
+        commit('SET_GROUP_DATA',{id:obj.id,data:_.groupBy(geo, x => x.properties[rootState.config.data[obj.id].style.prop])})
+	},
+	createLegendData: ({commit, state, rootState}, obj) => {
+		commit('SET_LEGEND_DATA', _.groupBy(state.appData.geojson.demo, x => x.properties[rootState.config.data.demo.style.prop]))
+	}
 }
 
 export default {

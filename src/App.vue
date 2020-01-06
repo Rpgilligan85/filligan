@@ -11,7 +11,10 @@
 					<div id="timeslider-container">
 						<TimeSlider v-if="dataLoaded" />
 					</div>
-					<Map :data="mapData" />
+					<div id="legend-container">
+						<Legend v-if="dataLoaded" />
+					</div>
+					<Map />
 				</v-col>
 			</v-row>
 		</v-container>
@@ -21,6 +24,7 @@
 <script>
 import Map from './components/Map';
 import TimeSlider from './components/TimeSlider';
+import Legend from './components/Legend';
 import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
@@ -28,6 +32,7 @@ export default {
 	components: {
 		Map,
 		TimeSlider,
+		Legend,
 	},
 	data: () => ({
 	}),
@@ -68,6 +73,18 @@ export default {
 		width: 100%;
 		height: 125px;
 		padding: 0 50px;
+		background: rgba(255,255,255,0.6);
+		display:flex;
+		align-items: center
+	}
+	#legend-container {
+		position: absolute;
+		left: 20px;
+		top: 150px;
+		z-index: 20000;
+		width: 200px;
+		height: 400px;
+		padding: 0;
 		background: rgba(255,255,255,0.6);
 		display:flex;
 		align-items: center
