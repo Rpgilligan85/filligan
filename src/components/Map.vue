@@ -112,10 +112,6 @@ export default {
 		}
 	},
 	watch: {
-		/* dataUpdated(val) {
-			console.log('val',val)
-			this.updateData()
-		}, */
 		dataUpdated: {
 			handler: function(val) {
 				val ? this.updateData() : null

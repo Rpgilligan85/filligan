@@ -7,7 +7,7 @@
 				</v-toolbar-title>
 			</v-toolbar>
 			<v-row no-gutters>
-				<v-col>
+				<!-- <v-col>
 					<div id="timeslider-container">
 						<TimeSlider v-if="dataLoaded" />
 					</div>
@@ -15,7 +15,7 @@
 						<Legend v-if="dataLoaded" />
 					</div>
 					<Map />
-				</v-col>
+				</v-col> -->
 			</v-row>
 		</v-container>
 	</v-app>
