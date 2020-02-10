@@ -1,5 +1,5 @@
 <template>
-	<v-app v-if="dataLoaded">
+	<v-app v-if="appReady">
 		<v-container fluid class="pa-0">
 			<v-toolbar color="#222" dark>
 				<v-toolbar-title>
@@ -7,15 +7,22 @@
 				</v-toolbar-title>
 			</v-toolbar>
 			<v-row no-gutters>
-				<!-- <v-col>
+				<v-col>
 					<div id="timeslider-container">
-						<TimeSlider v-if="dataLoaded" />
+						<TimeSlider v-if="appReady" />
 					</div>
 					<div id="legend-container">
-						<Legend v-if="dataLoaded" />
+						<Legend v-if="appReady" />
+					</div>
+					<div id="chart-container">
+						<component 
+							v-if="mapData.json.chart"
+							:is="'BarChartStock'" 
+							:options="config.BarChartStock" 
+						/>
 					</div>
 					<Map />
-				</v-col> -->
+				</v-col>
 			</v-row>
 		</v-container>
 	</v-app>
@@ -25,6 +32,8 @@
 import Map from './components/Map';
 import TimeSlider from './components/TimeSlider';
 import Legend from './components/Legend';
+import BarChart from './components/BarChart';
+import BarChartStock from './components/BarChartStock';
 import { mapState, mapGetters, mapActions, mapMutations } from 'vuex';
 
 export default {
@@ -33,14 +42,17 @@ export default {
 		Map,
 		TimeSlider,
 		Legend,
+		BarChart,
+		BarChartStock,
 	},
 	data: () => ({
+		appReady: false,
+		count:0
 	}),
 	computed: {
 		...mapState({
 			config: state => state.config,
 			mapData: state => state.dataLoader.appData,
-			dataLoaded: state => state.dataLoader.dataLoaded,
 		}),
 		
 	},
@@ -49,19 +61,18 @@ export default {
 			loadData: 'dataLoader/loadData',
 			createGeojson: 'dataLoader/createGeojson'
 		}),
-		...mapMutations({
-			setLoadState: 'dataLoader/dataLoaded'
-		})
+
 	},
 	beforeMount() {
 		let Keys = Object.keys(this.config.data);
+		console.log('Jeys',Keys)
 		Keys.forEach((key,index) => {
 			this.loadData(this.config.data[key]).finally(() => {
-				console.log('CSV',this.mapData.csv[key])
-				this.createGeojson({id:key,data:this.mapData.csv[key],lat:this.config.data[key].options.lat,lng:this.config.data[key].options.lng}).finally(() => {
-					Keys.length === (index + 1) ? this.setLoadState(true) : this.setLoadState(false)
-				})
-            
+			this.count++
+				if(Keys.length === this.count) {
+					console.log('hi', this.mapData) 
+					this.appReady = true
+				} 
 			})
 		})
 	},
@@ -74,6 +85,14 @@ export default {
 
 	html {
 		overflow: hidden !important;
+	}
+	#chart-container {
+		position: absolute;
+		top: 250px;
+		left: calc(100vw / 2 - 425px);
+		width: 850px;
+		height: 500px;
+		z-index: 1000;
 	}
 
 	#timeslider-container {

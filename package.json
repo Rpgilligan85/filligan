@@ -12,6 +12,8 @@
     "core-js": "^3.4.3",
     "d3": "^5.14.2",
     "dayjs": "^1.8.17",
+    "highcharts": "^8.0.0",
+    "highcharts-vue": "^1.3.5",
     "leaflet": "^1.6.0",
     "lodash": "^4.17.15",
     "nouislider": "^14.1.1",

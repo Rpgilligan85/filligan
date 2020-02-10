@@ -3,7 +3,7 @@ const d3 = require('d3')
 
 const state = {
     appData:{
-        csv: {},
+        json: {},
 		geojson: {},
 		grouped: {},
 		legend: {},
@@ -17,10 +17,10 @@ const getters = {
 }
 
 const mutations = {
-    loadCsvData: (state, obj) => {
-        Vue.set(state.appData.csv, obj.id, obj.data)
+    SET_JSON_DATA: (state, obj) => {
+        Vue.set(state.appData.json, obj.id, obj.data)
     },
-    loadGeojsonData: (state, obj) => {
+    SET_GEOJSON_DATA: (state, obj) => {
         Vue.set(state.appData.geojson, obj.id, obj.data)
     },
     SET_GROUP_DATA: (state, obj) => {
@@ -39,16 +39,40 @@ const mutations = {
 
 const actions = {
     loadData: async ({commit, dispatch}, obj) => {
-       await d3.csv(obj.options.url).then((data) => {
-            commit('loadCsvData',{id:obj.id,data:data})
+       switch (obj.dataInput) {
+		   case 'csv':
+			   await dispatch('loadCSVData', obj)
+			   await dispatch('formatData', obj)
+			   break;
+	   
+		   default:
+			   break;
+	   }
+	},
+	formatData: async ({commit, dispatch}, obj) => {
+		switch (obj.options.dataOutput) {
+			case 'geojson':
+				await dispatch('createGeojson', obj)
+				break;
+		
+			default:
+				break;
+		}
+	 },
+	loadCSVData: async ({commit, dispatch}, obj) => {
+		await d3.csv(obj.options.url).then(async (data) => {
+			console.log('CSVVVVVVVVVVV')
+			await commit('SET_JSON_DATA',{id:obj.id,data:data})
         })
-    },
-    createGeojson: async ({commit, rootState}, obj) => {
+	},
+    createGeojson: async ({commit, state, rootState}, obj) => {
+		console.log('GEOJSONNNNNNNNNNNN')
+		obj.data = state.appData.json[obj.id]
 		console.log('OBJ',obj)
         let geo = [];
         for (let i = 0; i < obj.data.length; i++) {
-            let _lat = Number(obj.data[i][obj.lat]);
-            let _long = Number(obj.data[i][obj.lng]);
+			let _lat = Number(obj.data[i][obj.options.lat]);
+            let _long = Number(obj.data[i][obj.options.lng]);
             geo[i] = {
                 type: "Feature",
                 geometry: {
@@ -58,17 +82,22 @@ const actions = {
                 properties: obj.data[i]
             }
         }
-        commit('loadGeojsonData',{id:obj.id,data:geo})
+        commit('SET_GEOJSON_DATA',{id:obj.id,data:geo})
         commit('SET_GROUP_DATA',{id:obj.id,data:_.groupBy(geo, x => x.properties[rootState.config.data[obj.id].style.prop])})
 	},
 	createLegendData: ({commit, state}) => {
+		console.log('STATE',state.appData.geojson)
 		let combined = {};
+		let all = [];
 		for (let f in state.appData.grouped) {
 			_.assign(combined,{...state.appData.grouped[f]})
 			
 		}
-		console.log('combined',combined)
+		for (let i in state.appData.geojson) {
+			all.push(state.appData.geojson[i])
+		}
 		commit('SET_LEGEND_DATA', combined)
+		commit('SET_GEOJSON_DATA',{id:'combined',data:_.flatten(all)})
 	}
 }
 

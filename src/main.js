@@ -6,6 +6,14 @@ import '@babel/polyfill'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 
+import HighchartsVue from 'highcharts-vue'
+Vue.use(HighchartsVue)
+
+import Highcharts from 'highcharts'
+import stockInit from 'highcharts/modules/stock'
+stockInit(Highcharts)
+
+
 import { Icon }  from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 

@@ -5,8 +5,9 @@ const config = {
     data: {
 		"demo": {
 			id: "demo",
-			type: 'csv',
+			dataInput: 'csv',
 			options: {
+				dataOutput: 'geojson',
 				url: './data/data1.csv',
 				lat: 'lat',
 				lng:'lng'
@@ -43,8 +44,9 @@ const config = {
 		},
 		"test": {
 			id: "test",
-			type: 'csv',
+			dataInput: 'csv',
 			options: {
+				dataOutput: 'geojson',
 				url: './data/data2.csv',
 				lat: 'lat',
 				lng:'lng'
@@ -79,9 +81,29 @@ const config = {
 				]
 			}
 		},
+		"chart": {
+			id: "chart",
+			dataInput:'csv',
+			options: {
+				dataOutput: 'json',
+				url:'./data//export.csv'
+			}
+		},
 	},
 	timeslider: {
 		data: ['demo','test'],
 		prop: ['Date','Date']
+	},
+	BarChart: {
+		dataFormat: 'column',
+		groupProp: 'Category',
+	},
+	BarChartStock: {
+		dataFormat: 'column',
+		groupProp: 'Security',
+		// groupProp: 'POI',
+		dateProp: 'Date',
+		dataID: 'chart'
+		// dataID: 'demo'
 	}
 }

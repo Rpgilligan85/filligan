@@ -21,15 +21,17 @@ export default {
 	}),
 	computed: {
 		...mapState({
-			mapData: state => state.dataLoader.appData.csv
+			mapData: state => state.dataLoader.appData.json
 		}),
 		async getDates() {
 			let dates = [];
 			for(let f in this.mapData) {
-				dates.push([...new Set(this.mapData[f].map(item => item.Date))])
-				let uniq = _.uniq(dates).flat()
-				console.log(uniq)
-				this.dates = uniq.sort((a,b) => new Date(a) - new Date(b))
+				if (f != 'chart') {
+					dates.push([...new Set(this.mapData[f].map(item => item.Date))])
+					let uniq = _.uniq(dates).flat()
+					console.log(uniq)
+					this.dates = uniq.sort((a,b) => new Date(a) - new Date(b))
+				}
 			}
 		}
 	},

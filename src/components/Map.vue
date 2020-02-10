@@ -77,6 +77,7 @@ export default {
 			}
 		},
 		getIcon(feature, prop, id) {
+
 			return this.iconObj[`${id}_${feature.properties[prop]}`].icon
 		},
 		getStyles(feature, prop, id) {
@@ -87,7 +88,6 @@ export default {
 			return items.indexOf(key) != -1 ? true : false
 		},
 		updateData() {
-			console.log('run', this.$refs)
 			setTimeout(() => {
 				let items = this.selectedItems.map(x => x.name)
 				for(let f in this.$refs) {
@@ -100,12 +100,13 @@ export default {
 		},
 		createIconObj() {
 			let obj = {};
-			console.log(this.config.data)
 			for (let f in this.config.data) {
-				this.config.data[f].style.styleObj.forEach(item => {
-					obj[`${f}_${item.value}`] = item
-					obj[`${f}_${item.value}`].prop = this.config.data[f].style.prop
-				});
+				if (this.config.data[f].options.dataOutput === 'geojson') {
+					this.config.data[f].style.styleObj.forEach(item => {
+						obj[`${f}_${item.value}`] = item
+						obj[`${f}_${item.value}`].prop = this.config.data[f].style.prop
+					});
+				}
 			}
 			this.iconObj = obj
 			console.log('obj',obj)
