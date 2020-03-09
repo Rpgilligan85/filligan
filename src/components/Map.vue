@@ -16,7 +16,9 @@
 					:geojson="geo"
 					:options="options(id)"
 					:ref="`geojson_${key}`"
-				/>
+				>
+					<l-popup> Hello </l-popup>
+				</LGeoJson>
 			</Vue2LeafletMarkerCluster>
 		</template>
 		</l-map>
@@ -24,12 +26,12 @@
 </template>
 
 <script>
-import {LMap, LTileLayer, LMarker, LGeoJson} from 'vue2-leaflet'
+import Vue from 'vue'
+import {LMap, LTileLayer, LMarker, LGeoJson, LPopup} from 'vue2-leaflet'
 import Vue2LeafletMarkerCluster from 'vue2-leaflet-markercluster'
 import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import L from 'leaflet'
 import { mapGetters, mapState, mapActions, mapMutations } from 'vuex'
-
 export default {
 	name: 'Map',
 	components: {LMap, LTileLayer, LMarker, LGeoJson, Vue2LeafletMarkerCluster},
@@ -60,6 +62,9 @@ export default {
 		...mapActions({
 			filterData: 'timeslider/filterData'
 		}),
+		...mapMutations({
+			SET_DIALOG_OBJ: 'dialog/SET_DIALOG_OBJ',
+		}),
 		
 		options(id) {
 			return {
@@ -73,8 +78,24 @@ export default {
 					html:`<div class="mdi mdi-${this.getIcon(feature,prop,id)}" style="${this.getStyles(feature,prop,id)}"</div>`
 				})
 				layer.setIcon(myIcon)
-				layer.bindPopup(feature.properties[prop])
+				// layer.bindPopup(feature.properties[prop])
+
+				layer.on('click', (e) => {
+					this.SET_DIALOG_OBJ({
+						visible: true,
+						component: 'CardTest',
+						data: feature,
+						title: 'My Title'
+					})
+
+					// this.createDialogContent(feature)
+				})
 			}
+		},
+		createDialogContent(feature) {
+			let dialogData = this.$root.$children[0].$refs.dialog._data.dialogData;
+			console.log(dialogData)
+			dialogData = 'PROP'
 		},
 		getIcon(feature, prop, id) {
 
@@ -137,6 +158,8 @@ export default {
 	#map {
 		width: 100vw;
 		height: calc(100vh - 65px);
+		z-index: 5 !important;
+		position: relative;
 	}
 
 	.leaflet-div-icon {

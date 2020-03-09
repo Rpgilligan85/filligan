@@ -70,7 +70,7 @@ export default {
 		this.chartData = this.mapData.json[this.options.dataID]
 	},
 	mounted() {
-		console.log('chartData', this.chartData)
+		console.log('chartData', this.mapData)
 		this.parseData()
 	}
 	};

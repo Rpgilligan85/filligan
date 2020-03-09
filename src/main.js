@@ -13,6 +13,9 @@ import Highcharts from 'highcharts'
 import stockInit from 'highcharts/modules/stock'
 stockInit(Highcharts)
 
+import PortalVue from 'portal-vue'
+Vue.use(PortalVue)
+
 
 import { Icon }  from 'leaflet'
 import 'leaflet/dist/leaflet.css'
