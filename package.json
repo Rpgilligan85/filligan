@@ -4,21 +4,21 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-	"build": "vue-cli-service build",
-	"test": "./node_modules/.bin/jest"
+    "build": "vue-cli-service build",
+    "test": "./node_modules/.bin/jest"
   },
   "jest": {
-	"moduleNameMapper": {
-	  "^vue$": "vue/dist/vue.common.js"
-	},
-	"moduleFileExtensions": [
-	  "js",
-	  "vue"
-	],
-	"transform": {
-	  "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
-	  ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
-	}
+    "moduleNameMapper": {
+      "^vue$": "vue/dist/vue.common.js"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "vue"
+    ],
+    "transform": {
+      "^.+\\.js$": "<rootDir>/node_modules/babel-jest",
+      ".*\\.(vue)$": "<rootDir>/node_modules/vue-jest"
+    }
   },
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
